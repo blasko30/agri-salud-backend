@@ -32,7 +32,7 @@ router.post('/', verify, upload.single('imagen'), async (req, res) => {
         if (!req.file) return res.status(400).send("No se subió imagen");
 
         // 1. Preguntamos a la IA (Gemini)
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const prompt = `Actúa como agrónomo. Analiza la imagen. Si NO es planta responde JSON { "error": "..." }. Si ES planta, responde JSON: { "nombre": "...", "descripcion": "...", "causas": [], "tratamiento": [] }`;
         const imagePart = fileToGenerativePart(req.file.path, req.file.mimetype);
         
