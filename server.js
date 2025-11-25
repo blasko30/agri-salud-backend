@@ -2,29 +2,29 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path'); // <--- IMPORTAR ESTO
 
-// Importar Rutas
 const authRoute = require('./routes/auth');
-const diagnosticoRoute = require('./routes/diagnostico'); // <--- Ruta de diagnóstico
+const diagnosticoRoute = require('./routes/diagnostico');
+const usuarioRoute = require('./routes/usuario'); // <---  IMPORTAR RUTA USUARIO
 
-dotenv.config(); // Habilitar variables de entorno
+dotenv.config();
 const app = express();
 
-// Conexión a Base de Datos
 mongoose.connect(process.env.DB_CONNECT)
   .then(() => console.log('Conectado a la Base de Datos'))
   .catch(err => console.log('Error de conexión a DB:', err));
 
-// Middlewares
-app.use(express.json()); 
-app.use(cors()); 
+app.use(express.json());
+app.use(cors());
+
+// <---  PERMITIR VER LAS FOTOS (Hacer pública la carpeta uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Rutas
 app.use('/api/user', authRoute);
-app.use('/api/diagnostico', diagnosticoRoute); // <--- Usar la ruta de diagnóstico
+app.use('/api/diagnostico', diagnosticoRoute);
+app.use('/api/usuario', usuarioRoute); //  USAR LA RUTA
 
-// Iniciar servidor
-// Usamos el puerto que nos diga la nube O el 3000 si estamos en casa
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
