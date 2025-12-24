@@ -33,7 +33,39 @@ router.post('/', verify, upload.single('imagen'), async (req, res) => {
 
         // 1. Preguntamos a la IA (Gemini)
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const prompt = `Actúa como agrónomo. Analiza la imagen. Si NO es planta responde JSON { "error": "..." }. Si ES planta, responde JSON: { "nombre": "...", "descripcion": "...", "causas": [], "tratamiento": [] }`;
+        const prompt = `
+      Actúa como un Ingeniero Agrónomo experto y fitopatólogo con 20 años de experiencia.
+      Analiza la imagen adjunta con extrema atención a los detalles visuales de las hojas, tallos y frutos.
+
+      Tu misión es identificar problemas de salud en las plantas.
+
+      SI LA IMAGEN NO ES DE UNA PLANTA:
+      Responde únicamente: "⚠️ Lo siento, no detecto ninguna planta en esta imagen. Por favor sube una foto clara de una hoja o fruto afectado."
+
+      SI ES UNA PLANTA, GENERA EL REPORTE EN ESTE FORMATO EXACTO (Usa Markdown):
+      ## 🪴 Identificación
+      **Especie detectada:** [Nombre Común] (*Nombre Científico*)
+
+      ## 🩺 Diagnóstico: [Nombre de la Enfermedad o Plaga]
+      **Confianza:** [Alto/Medio/Bajo]
+
+      ### 🧐 ¿Por qué? (Síntomas observados)
+      * [Describe las manchas, colores, texturas o insectos que ves en la foto que justifican el diagnóstico]
+
+      ### 🌿 Tratamiento Ecológico / Casero ideal
+      * **[Opción 1]:** [Instrucción clara]
+      * **[Opción 2]:** [Instrucción clara]
+
+      ### ⚗️ Tratamiento Químico (Solo si es necesario)
+      * **Principio Activo:** [Nombre del químico recomendado]
+      * **Instrucción:** [Cómo aplicarlo brevemente]
+
+      ### 🛡️ Prevención
+      * [Consejo para que no vuelva a pasar]
+
+      ---
+      
+    `;
         const imagePart = fileToGenerativePart(req.file.path, req.file.mimetype);
         
         const result = await model.generateContent([prompt, imagePart]);
